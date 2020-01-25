@@ -91,36 +91,62 @@ int getOffset(char* offset) {
 
 
 void parseHeaderAndApplyFilter(unsigned char* bmpFileAsBytes, int isGrayscale, FILE* stream) {
-  //int offsetFirstBytePixelArray = 0;
-  int width = 0;
-  int height = 0;
-  unsigned char* pixelArray = NULL;
-
-  unsigned char headerField[2];
-  unsigned int fileSize;
-  unsigned int dummyStorage;
-  unsigned int offset;
 
   fseek(stream, 0, SEEK_SET ); // stream is the file we are in. 0 sets it to where we want to read from SEEK_SET. SEEK_SET
                                // is the beginning of the file? Idk. I just know that 0 says where in the file we want to 
-                               // start reading from.
+                               // start reading from.  
 
+  // bmp Header variables
+  unsigned char headerField[2];
+  unsigned int fileSize;
+  unsigned int dummyStorage;
+  unsigned int offsetFirstBytePixelArray = 0;
+
+  // --------------------- bmp Header--------------------------//
   fread(headerField, 2, 1, stream);
   fread(&fileSize, 4, 1, stream);
   fread(&dummyStorage, 4, 1, stream);
-  fread(&offset, 4, 1, stream);
-
-  printf("HF %s\n\t", headerField);
-  printf("fileSize %i\n\t", fileSize);
-  printf("dummyStorage %i\n\t", dummyStorage);
-  printf("offset %i\n\t", offset);
+  fread(&offsetFirstBytePixelArray, 4, 1, stream);
 
 
 
-  // for(int i = 10; i < 14; i++) {
-  //   printf("%c", bmpFileAsBytes[i]);
-  //   printf("\n");
-  // }
+  // DIB Header variables
+  unsigned int dibHeaderSize;
+  unsigned int width = 0; 
+  unsigned int height = 0;
+  unsigned int numColorPlanes;
+  unsigned int numBitsPerPixel;
+  unsigned int copmressionMethod;
+  unsigned int imageSizeInBytes;
+  unsigned int horizRes;
+  unsigned int vertRes;
+  unsigned int numColorsInPallete;
+  unsigned int numImportantColors;
+
+  // --------------------- DIB Header--------------------------//
+  fread(&dibHeaderSize, 4, 1, stream);
+  fread(&width, 4, 1, stream);
+  fread(&height, 4, 1, stream);
+  fread(&numColorPlanes, 2, 1, stream);
+  fread(&numBitsPerPixel, 2, 1, stream);
+  fread(&copmressionMethod, 4, 1, stream);
+  fread(&imageSizeInBytes, 4, 1, stream);
+  fread(&horizRes, 4, 1, stream);
+  fread(&vertRes, 4, 1, stream);
+  fread(&numColorsInPallete, 4, 1, stream);
+  fread(&numImportantColors, 4, 1, stream);
+
+
+
+  // Post-headers pixel array
+  unsigned char* pixelArray = NULL;
+
+  printf("%s %ui", "Here is the pixelOfset: ", offsetFirstBytePixelArray);
+
+  // printf("HF %s\n\t", headerField);
+  // printf("fileSize %i\n\t", fileSize);
+  // printf("dummyStorage %i\n\t", dummyStorage);
+  // printf("offset %i\n\t", offsetFirstBytePixelArray);
 
 
   printf("TODO: set offsetFirstBytePixelArray\n");

@@ -9,7 +9,7 @@
 #define FSEEK_ERROR 2
 #define FREAD_ERROR 3
 #define MALLOC_ERROR 4
-#define FWRITE_ERROR 5
+#define FWRITE_ERROR 5                          
 
 /**
  * Parses the command line.
@@ -85,11 +85,43 @@ void applyFilterToPixelArray(unsigned char* pixelArray, int width, int height, i
   printf("TODO: void applyFilterToPixelArray(unsigned char* pixelArray, int width, int height, int isGrayscale)\n");
 }
 
-void parseHeaderAndApplyFilter(unsigned char* bmpFileAsBytes, int isGrayscale) {
-  int offsetFirstBytePixelArray = 0;
+int getOffset(char* offset) {
+  return 0;
+}
+
+
+void parseHeaderAndApplyFilter(unsigned char* bmpFileAsBytes, int isGrayscale, FILE* stream) {
+  //int offsetFirstBytePixelArray = 0;
   int width = 0;
   int height = 0;
   unsigned char* pixelArray = NULL;
+
+  unsigned char headerField[2];
+  unsigned int fileSize;
+  unsigned int dummyStorage;
+  unsigned int offset;
+
+  fseek(stream, 0, SEEK_SET ); // stream is the file we are in. 0 sets it to where we want to read from SEEK_SET. SEEK_SET
+                               // is the beginning of the file? Idk. I just know that 0 says where in the file we want to 
+                               // start reading from.
+
+  fread(headerField, 2, 1, stream);
+  fread(&fileSize, 4, 1, stream);
+  fread(&dummyStorage, 4, 1, stream);
+  fread(&offset, 4, 1, stream);
+
+  printf("HF %s\n\t", headerField);
+  printf("fileSize %i\n\t", fileSize);
+  printf("dummyStorage %i\n\t", dummyStorage);
+  printf("offset %i\n\t", offset);
+
+
+
+  // for(int i = 10; i < 14; i++) {
+  //   printf("%c", bmpFileAsBytes[i]);
+  //   printf("\n");
+  // }
+
 
   printf("TODO: set offsetFirstBytePixelArray\n");
   printf("TODO: set width\n");
@@ -125,7 +157,7 @@ int main(int argc, char **argv) {
   }
   getBmpFileAsBytes(bmpFileAsBytes, fileSizeInBytes, stream);
 
-  parseHeaderAndApplyFilter(bmpFileAsBytes, grayscale);
+  parseHeaderAndApplyFilter(bmpFileAsBytes, grayscale, stream);
 
 #ifndef DEBUG
   if (fwrite(bmpFileAsBytes, fileSizeInBytes, 1, stdout) != 1) {

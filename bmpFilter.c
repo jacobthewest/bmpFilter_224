@@ -89,6 +89,43 @@ int getOffset(char* offset) {
   return 0;
 }
 
+void setPixelArray(unsigned char* pixelArray, FILE* stream, int offsetFirstBytePixelArray, int numElements, int paddingPixels, int width) {
+  unsigned int pixelArrayStartIndex = offsetFirstBytePixelArray + 1;
+
+  printf("%s %i", "here is the size of the pixel array : ", numElements);
+  printf("\n");
+  printf("%s %i", "here is the pixelArrayStartIndex :", pixelArrayStartIndex);
+  printf("\n");
+
+  // JACOB, now you need to work on inserting a pading pixel after every so many pixels are added per row.
+  int numElementsInsertedOnRow = 0;
+  int charsAllowedPerRow = (width - paddingPixels);
+  for (int i = 0; i < numElements; i++) {
+    fread(&pixelArray[i], 1, 1, stream);
+    numElementsInsertedOnRow++;
+    if (numElementsInsertedOnRow == charsAllowedPerRow) {
+      // We are done for the row. Insert your padding pixels
+      for (int j = 0; j < paddingPixels; j++) {
+        i++;
+        pixelArray[i] = 0;
+      }
+      numElementsInsertedOnRow = 0;
+    }
+  }
+
+  for (int i = 0; i < numElements; i++) {
+    printf("%s %i %s %02x", "Index ", i, ":", pixelArray[i]);
+    printf("\n");  
+  }
+} 
+
+int calculatePaddingPixels(int width) {
+  int paddingPixelsNeeded = 0;
+  int remainder = width / 3; // 3 Beacause a pixel is 3 bytes
+  paddingPixelsNeeded = remainder % 4;
+  return paddingPixelsNeeded;
+}
+
 
 void parseHeaderAndApplyFilter(unsigned char* bmpFileAsBytes, int isGrayscale, FILE* stream) {
 
@@ -98,9 +135,9 @@ void parseHeaderAndApplyFilter(unsigned char* bmpFileAsBytes, int isGrayscale, F
 
   // bmp Header variables
   unsigned char headerField[2];
-  unsigned int fileSize;
-  unsigned int dummyStorage;
-  unsigned int offsetFirstBytePixelArray = 0;
+  int fileSize;
+  int dummyStorage;
+  int offsetFirstBytePixelArray = 0;
 
   // --------------------- bmp Header--------------------------//
   fread(headerField, 2, 1, stream);
@@ -111,17 +148,17 @@ void parseHeaderAndApplyFilter(unsigned char* bmpFileAsBytes, int isGrayscale, F
 
 
   // DIB Header variables
-  unsigned int dibHeaderSize;
-  unsigned int width = 0; 
-  unsigned int height = 0;
-  unsigned int numColorPlanes;
-  unsigned int numBitsPerPixel;
-  unsigned int copmressionMethod;
-  unsigned int imageSizeInBytes;
-  unsigned int horizRes;
-  unsigned int vertRes;
-  unsigned int numColorsInPallete;
-  unsigned int numImportantColors;
+  int dibHeaderSize;
+  int width = 0; 
+  int height = 0;
+  int numColorPlanes;
+  int numBitsPerPixel;
+  int copmressionMethod;
+  int imageSizeInBytes;
+  int horizRes;
+  int vertRes;
+  int numColorsInPallete;
+  int numImportantColors;
 
   // --------------------- DIB Header--------------------------//
   fread(&dibHeaderSize, 4, 1, stream);
@@ -139,20 +176,31 @@ void parseHeaderAndApplyFilter(unsigned char* bmpFileAsBytes, int isGrayscale, F
 
 
   // Post-headers pixel array
-  unsigned char* pixelArray = NULL;
-
-  printf("%s %ui", "Here is the pixelOfset: ", offsetFirstBytePixelArray);
-
-  // printf("HF %s\n\t", headerField);
-  // printf("fileSize %i\n\t", fileSize);
-  // printf("dummyStorage %i\n\t", dummyStorage);
-  // printf("offset %i\n\t", offsetFirstBytePixelArray);
+  unsigned int numElements = width * height;
+  unsigned char pixelArray[numElements + 1];
 
 
-  printf("TODO: set offsetFirstBytePixelArray\n");
-  printf("TODO: set width\n");
-  printf("TODO: set height\n");
-  printf("TODO: set the pixelArray to the start of the pixel array\n");
+  // Calculate pixel padding
+  unsigned int paddingPixels = calculatePaddingPixels(width);
+  
+  
+  printf("%s %i", "Padding pixels: ", paddingPixels);
+  printf("\n");
+  // printf("%s %u", "Here is the pixelOfset: ", offsetFirstBytePixelArray);
+  // printf("\n");
+  // printf("%s %u", "Here is the width: ", width);
+  // printf("\n");
+  // printf("%s %u", "Here is the height: ", height);
+  // printf("\n");
+  // printf("%s %lu", "Here is the size of the pixelArray: ", sizeof(pixelArray)/sizeof(pixelArray[0]));
+  // printf("\n");
+
+
+
+ setPixelArray(pixelArray, stream, offsetFirstBytePixelArray, numElements, paddingPixels, width);
+
+
+
 
 #ifdef DEBUG
   printf("offsetFirstBytePixelArray = %u\n", offsetFirstBytePixelArray);

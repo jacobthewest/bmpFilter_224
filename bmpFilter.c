@@ -74,15 +74,39 @@ void applyThresholdToPixel(unsigned char* pixel) {
 }
 
 void applyFilterToPixel(unsigned char* pixel, int isGrayscale) {
-  printf("TODO: void applyFilterToPixel(unsigned char* pixel, int isGrayscale)\n");
+  printf("Pixel: %d ", *pixel);
 }
 
-void applyFilterToRow(unsigned char* row, int width, int isGrayscale) {
-  printf("TODO: void applyFilterToRow(unsigned char* row, int width, int isGrayscale)\n");
+void applyFilterToRow(unsigned char* pixelArray, int isGrayscale, int startIndex, int endIndex) {
+
+  for(int i = startIndex; i < endIndex; i++) {
+    printf("pixelArray[%d]: %d\n", i, pixelArray[i]);
+    // unsigned char tempChar = pixelArray[i];
+    // applyFilterToPixel(tempChar, isGrayscale);
+    applyFilterToPixel(&pixelArray[i], isGrayscale);
+  }
+
 }
 
-void applyFilterToPixelArray(unsigned char* pixelArray, int width, int height, int isGrayscale) {
+void applyFilterToPixelArray(unsigned char* pixelArray, int imageWidthInBytes, int height, int isGrayscale) {
   printf("TODO: void applyFilterToPixelArray(unsigned char* pixelArray, int width, int height, int isGrayscale)\n");
+
+  int charsInARow = imageWidthInBytes;
+  int startIndex = 0;
+  //int elementsInPixelArray = sizeof(pixelArray) / sizeof(pixelArray[0]);
+
+// height
+// 1 because we are working with a single row right now.
+  for (int i = 0; i < 1; i++) {
+    int endIndex = startIndex + charsInARow;
+    
+    applyFilterToRow(pixelArray, isGrayscale, startIndex, endIndex);
+    //Row is now filtered and copied
+
+    startIndex = endIndex; // For the next row
+  }
+
+  // Pixel array has now had the filter applied to it.
 }
 
 int getOffset(char* offset) {
@@ -113,10 +137,24 @@ void setPixelArray(unsigned char* pixelArray, FILE* stream, int offsetFirstByteP
     }
   }
 
-  for (int i = 0; i < 70; i++) {
-    printf("%s %i %s %02x", "Index ", i, ":", pixelArray[i]);
-    printf("\n");  
-  }
+
+  // Right now I'm type casting the pixels to see if i can get their decimal values from their char representations
+  printf("%s %02x", "Here is the first pixel in pixelArray as a hex", pixelArray[0]);
+  printf("\n");
+  printf("%s %d", "Here is the first pixel in pixelArray as a decimal", pixelArray[0]);
+  printf("\n");
+
+  // Test of the average of the first three pixel values
+  int sumOfThree = pixelArray[0] + pixelArray[1] + pixelArray[2];
+  printf("%s %d", "Here is the sum of the first three pixels. Should be 765... :", sumOfThree);
+  int average = (sumOfThree / 3);
+  printf("%s %d", "Here is the average value: ", average);
+
+
+  // for (int i = 0; i < 70; i++) {
+  //   printf("%s %i %s %02x", "Index ", i, ":", pixelArray[i]);
+  //   printf("\n");  
+  // }
 } 
 
 int calculatePaddingPixels(int imageWidthInBytes) {
@@ -206,7 +244,6 @@ void parseHeaderAndApplyFilter(unsigned char* bmpFileAsBytes, int isGrayscale, F
 
 
 
-
 #ifdef DEBUG
   printf("offsetFirstBytePixelArray = %u\n", offsetFirstBytePixelArray);
   printf("width = %u\n", width);
@@ -214,7 +251,7 @@ void parseHeaderAndApplyFilter(unsigned char* bmpFileAsBytes, int isGrayscale, F
   printf("pixelArray = %p\n", pixelArray);
 #endif
 
-  applyFilterToPixelArray(pixelArray, width, height, isGrayscale);
+  applyFilterToPixelArray(pixelArray, imageWidthInBytes, height, isGrayscale);
 }
 
 int main(int argc, char **argv) {

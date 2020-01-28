@@ -89,7 +89,7 @@ int getOffset(char* offset) {
   return 0;
 }
 
-void setPixelArray(unsigned char* pixelArray, FILE* stream, int offsetFirstBytePixelArray, int numElements, int paddingPixels, int width) {
+void setPixelArray(unsigned char* pixelArray, FILE* stream, int offsetFirstBytePixelArray, int numElements, int paddingPixels, int imageWidthInBytes) {
   unsigned int pixelArrayStartIndex = offsetFirstBytePixelArray + 1;
 
   printf("%s %i", "here is the size of the pixel array : ", numElements);
@@ -99,7 +99,7 @@ void setPixelArray(unsigned char* pixelArray, FILE* stream, int offsetFirstByteP
 
   // JACOB, now you need to work on inserting a pading pixel after every so many pixels are added per row.
   int numElementsInsertedOnRow = 0;
-  int charsAllowedPerRow = (width - paddingPixels);
+  int charsAllowedPerRow = (imageWidthInBytes - paddingPixels);
   for (int i = 0; i < numElements; i++) {
     fread(&pixelArray[i], 1, 1, stream);
     numElementsInsertedOnRow++;
@@ -113,15 +113,15 @@ void setPixelArray(unsigned char* pixelArray, FILE* stream, int offsetFirstByteP
     }
   }
 
-  for (int i = 0; i < numElements; i++) {
+  for (int i = 0; i < 70; i++) {
     printf("%s %i %s %02x", "Index ", i, ":", pixelArray[i]);
     printf("\n");  
   }
 } 
 
-int calculatePaddingPixels(int width) {
+int calculatePaddingPixels(int imageWidthInBytes) {
   int paddingPixelsNeeded = 0;
-  int remainder = width / 3; // 3 Beacause a pixel is 3 bytes
+  int remainder = imageWidthInBytes / 3; // 3 Beacause a pixel is 3 bytes
   paddingPixelsNeeded = remainder % 4;
   return paddingPixelsNeeded;
 }
@@ -176,15 +176,20 @@ void parseHeaderAndApplyFilter(unsigned char* bmpFileAsBytes, int isGrayscale, F
 
 
   // Post-headers pixel array
-  unsigned int numElements = width * height;
+  int imageWidthInBytes = width * 3;
+  unsigned int numElements = imageWidthInBytes * height;
   unsigned char pixelArray[numElements + 1];
 
 
   // Calculate pixel padding
-  unsigned int paddingPixels = calculatePaddingPixels(width);
+  unsigned int paddingPixels = calculatePaddingPixels(imageWidthInBytes);
   
   
   printf("%s %i", "Padding pixels: ", paddingPixels);
+  printf("\n");
+  printf("%s %i", "Image width in pixels: ", width);
+  printf("\n");
+  printf("%s %i", "Image height in pixels: ", height);
   printf("\n");
   // printf("%s %u", "Here is the pixelOfset: ", offsetFirstBytePixelArray);
   // printf("\n");
@@ -197,7 +202,7 @@ void parseHeaderAndApplyFilter(unsigned char* bmpFileAsBytes, int isGrayscale, F
 
 
 
- setPixelArray(pixelArray, stream, offsetFirstBytePixelArray, numElements, paddingPixels, width);
+ setPixelArray(pixelArray, stream, offsetFirstBytePixelArray, numElements, paddingPixels, imageWidthInBytes);
 
 
 

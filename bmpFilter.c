@@ -182,7 +182,9 @@ int calculatePaddingPixels(int imageWidthInBytes) {
 
 void copyPixelArray(unsigned char* pixelArray, unsigned char* pixelArrayCopy, int numElements) {
   for (int i = 0; i < (numElements + 1); i++) {
+    printf("Putting %d into %d", pixelArray[i], pixelArrayCopy[i]);
     pixelArrayCopy[i] = pixelArray[i];
+    printf("\n");
   }
 }
 
@@ -272,14 +274,9 @@ void parseHeaderAndApplyFilter(unsigned char* bmpFileAsBytes, int isGrayscale, F
   printf("height = %u\n", height);
   printf("pixelArray = %p\n", pixelArray);
 #endif
-  
-  unsigned char pixelArrayCopy[numElements + 1];
-  copyPixelArray(pixelArray, pixelArrayCopy, numElements);
-  for(int i = 0; i < (numElements + 1); i++) {
-    printf("Byte at %d: %d", i, pixelArray[i]);
-    printf("\n");
-  }
-  applyFilterToPixelArray(pixelArrayCopy, imageWidthInBytes, height, isGrayscale);
+
+//  copyPixelArray(pixelArray, pixelArrayCopy, numElements);
+  applyFilterToPixelArray(pixelArray, imageWidthInBytes, height, isGrayscale);
 }
 
 int main(int argc, char **argv) {

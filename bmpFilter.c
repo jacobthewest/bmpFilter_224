@@ -103,7 +103,10 @@ void applyFilterToPixel(unsigned char* pixel, int isGrayscale) {
 }
 
 int calculatePaddingPixels(int bytesFromGivenPixels) {
-  int paddingPixelsNeeded = 4 - (bytesFromGivenPixels % 4);
+  int paddingPixelsNeeded = 0;
+  if((bytesFromGivenPixels % 4) != 0)  {
+    paddingPixelsNeeded = 4 - (bytesFromGivenPixels % 4);
+  }  
   return paddingPixelsNeeded;
 }
 

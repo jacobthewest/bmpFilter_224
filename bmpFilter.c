@@ -60,6 +60,7 @@ void getBmpFileAsBytes(unsigned char* ptr, unsigned fileSizeInBytes, FILE* strea
   }
 }
 
+<<<<<<< HEAD
 unsigned char getAverageIntensity(unsigned char blue, unsigned char green, unsigned char red) {  
   unsigned char sum = blue + green + red;
   unsigned char average = sum / 3;
@@ -84,11 +85,47 @@ void applyThresholdToPixel(unsigned char* pixel) {
   
   for(int i = 0; i < 3; i++) {
     pixel[i] = blackOrWhitePixel;
+=======
+unsigned char getAverageIntensity(unsigned char blue, unsigned char green, unsigned char red) {
+  return ((blue + green + red) / 3);
+}
+
+void applyGrayscaleToPixel(unsigned char* pixel) {
+  unsigned char blue = *pixel;
+  unsigned char green = *(pixel + 1);
+  unsigned char red = *(pixel + 2);
+  unsigned char averageIntensity = getAverageIntensity(blue, green, red);
+  
+  *pixel = averageIntensity;
+  *(pixel + 1) = averageIntensity;
+  *(pixel + 2) = averageIntensity;
+}
+
+void applyThresholdToPixel(unsigned char* pixel) {
+  unsigned char blue = *pixel;
+  unsigned char green = *(pixel + 1);
+  unsigned char red = *(pixel + 2);
+  unsigned char averageIntensity = getAverageIntensity(blue, green, red);
+  
+  if(averageIntensity < 128) { 
+    // All black
+    *pixel = 0x00;
+    *(pixel + 1) = 0x00;
+    *(pixel + 2) = 0x00; 
+  } else {
+    // All white
+    *pixel = 0xff;
+    *(pixel + 1) = 0xff;
+    *(pixel + 2) = 0xff;
+>>>>>>> postTalk
   }
 }
 
 void applyFilterToPixel(unsigned char* pixel, int isGrayscale) {
+<<<<<<< HEAD
   // printf("Pixel: %d ", *pixel);
+=======
+>>>>>>> postTalk
   if(isGrayscale) {
     applyGrayscaleToPixel(pixel);
   } else {
@@ -96,6 +133,7 @@ void applyFilterToPixel(unsigned char* pixel, int isGrayscale) {
   }
 }
 
+<<<<<<< HEAD
 void applyFilterToRow(unsigned char* pixelArray, int isGrayscale, int startIndex, int endIndex) {
   //When I pass in a pixel from pixelArray[i] to pixel[i], will it pass by reference? I need it to.
 
@@ -183,6 +221,29 @@ int calculatePaddingPixels(int imageWidthInBytes) {
 void copyPixelArray(unsigned char* pixelArray, unsigned char* pixelArrayCopy, int numElements) {
   for (int i = 0; i < (numElements + 1); i++) {
     pixelArrayCopy[i] = pixelArray[i];
+=======
+int calculatePaddingPixels(int bytesFromGivenPixels) {
+  int paddingPixelsNeeded = 0;
+  if((bytesFromGivenPixels % 4) != 0)  {
+    paddingPixelsNeeded = 4 - (bytesFromGivenPixels % 4);
+  }  
+  return paddingPixelsNeeded;
+}
+
+void applyFilterToRow(unsigned char* row, int width, int isGrayscale) {
+  for(int i = 0; i < width; i++) {
+    applyFilterToPixel((row + (i * 3)), isGrayscale);
+  }
+}
+
+void applyFilterToPixelArray(unsigned char* pixelArray, int width, int height, int isGrayscale) {
+  int bytesFromGivenPixels = width * 3;
+  int paddingPixelsPerRow = calculatePaddingPixels(bytesFromGivenPixels);
+  int bytesInRow = bytesFromGivenPixels + paddingPixelsPerRow;
+
+  for(int i = 0; i < height; i++) {
+    applyFilterToRow((pixelArray + (bytesInRow * i)), width, isGrayscale);
+>>>>>>> postTalk
   }
 }
 
@@ -233,6 +294,7 @@ void parseHeaderAndApplyFilter(unsigned char* bmpFileAsBytes, int isGrayscale, F
   fread(&numImportantColors, 4, 1, stream);
 
 
+<<<<<<< HEAD
 
   // Post-headers pixel array
   int imageWidthInBytes = width * 3;
@@ -265,6 +327,12 @@ void parseHeaderAndApplyFilter(unsigned char* bmpFileAsBytes, int isGrayscale, F
   for(int i = 0; i < 60; i++) {
     printf("Index %d: %d%s", i, pixelArray[i], "\n");
   }
+=======
+  offsetFirstBytePixelArray = *(int*)(bmpFileAsBytes + 10);
+  width = *(int*)(bmpFileAsBytes + 18);
+  height = *(int*)(bmpFileAsBytes + 22);
+  pixelArray = bmpFileAsBytes + offsetFirstBytePixelArray;
+>>>>>>> postTalk
 
 #ifdef DEBUG
   printf("offsetFirstBytePixelArray = %u\n", offsetFirstBytePixelArray);

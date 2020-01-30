@@ -60,32 +60,6 @@ void getBmpFileAsBytes(unsigned char* ptr, unsigned fileSizeInBytes, FILE* strea
   }
 }
 
-<<<<<<< HEAD
-unsigned char getAverageIntensity(unsigned char blue, unsigned char green, unsigned char red) {  
-  unsigned char sum = blue + green + red;
-  unsigned char average = sum / 3;
-  return average;
-}
-
-void applyGrayscaleToPixel(unsigned char* pixel) {
-  unsigned char averageIntensity = getAverageIntensity(pixel[0], pixel[1], pixel[2]);
-  for(int i = 0; i < 3; i++) {
-    pixel[i] = averageIntensity;
-  }
-}
-
-void applyThresholdToPixel(unsigned char* pixel) {
-  unsigned char averageIntensity = getAverageIntensity(pixel[0], pixel[1], pixel[2]);
-  unsigned char blackOrWhitePixel;
-  if (averageIntensity < 128) {
-    blackOrWhitePixel = 0x00;
-  } else {
-    blackOrWhitePixel = 0xff;
-  }
-  
-  for(int i = 0; i < 3; i++) {
-    pixel[i] = blackOrWhitePixel;
-=======
 unsigned char getAverageIntensity(unsigned char blue, unsigned char green, unsigned char red) {
   return ((blue + green + red) / 3);
 }
@@ -117,15 +91,10 @@ void applyThresholdToPixel(unsigned char* pixel) {
     *pixel = 0xff;
     *(pixel + 1) = 0xff;
     *(pixel + 2) = 0xff;
->>>>>>> postTalk
   }
 }
 
 void applyFilterToPixel(unsigned char* pixel, int isGrayscale) {
-<<<<<<< HEAD
-  // printf("Pixel: %d ", *pixel);
-=======
->>>>>>> postTalk
   if(isGrayscale) {
     applyGrayscaleToPixel(pixel);
   } else {
@@ -133,95 +102,6 @@ void applyFilterToPixel(unsigned char* pixel, int isGrayscale) {
   }
 }
 
-<<<<<<< HEAD
-void applyFilterToRow(unsigned char* pixelArray, int isGrayscale, int startIndex, int endIndex) {
-  //When I pass in a pixel from pixelArray[i] to pixel[i], will it pass by reference? I need it to.
-
-  int pixelsProcessesd = 0;
-  for(int i = startIndex; i < endIndex; i++) {
-    unsigned char pixel[3];
-    pixel[i] = pixelArray[i];
-    pixelsProcessesd++;
-    if((pixelsProcessesd % 3) == 0) {
-      applyFilterToPixel(pixel, isGrayscale);
-    }
-  }
-
-}
-
-void applyFilterToPixelArray(unsigned char* pixelArray, int imageWidthInBytes, int height, int isGrayscale) {
-  //printf("TODO: void applyFilterToPixelArray(unsigned char* pixelArray, int width, int height, int isGrayscale)\n");
-  printf("%s", "inside applyFilterToPixelArray function");
-  int charsInARow = imageWidthInBytes;
-  int startIndex = 0;
-
-  for(int j = 0; j < 60; j++) { //Pixel array before
-    printf("Before %d: %d", j, pixelArray[j]);
-  }
-
-// height
-// 1 because we are working with a single row right now.
-  for (int i = 0; i < 1; i++) {
-    int endIndex = startIndex + charsInARow;
-    applyFilterToRow(pixelArray, isGrayscale, startIndex, endIndex);
-    //Row is now filtered and copied
-    for(int j = 0; j < 60; j++) { //Pixel array before
-      printf("After %d: %d", j, pixelArray[j]);
-    }
-
-    startIndex = endIndex; // For the next row
-  }
-
-  // Pixel array has now had the filter applied to it.
-}
-
-int getOffset(char* offset) {
-  return 0;
-}
-
-void setPixelArray(unsigned char* pixelArray, FILE* stream, int offsetFirstBytePixelArray, int numElements, int paddingPixels, int imageWidthInBytes) {
-  //unsigned int pixelArrayStartIndex = offsetFirstBytePixelArray + 1;
-
-  // printf("%s %i", "here is the size of the pixel array : ", numElements);
-  // printf("\n");
-  // printf("%s %i", "here is the pixelArrayStartIndex :", pixelArrayStartIndex);
-  // printf("\n");
-
-  // JACOB, now you need to work on inserting a pading pixel after every so many pixels are added per row.
-  int numElementsInsertedOnRow = 0;
-  int charsAllowedPerRow = (imageWidthInBytes - paddingPixels);
-  for (int i = 0; i < numElements; i++) {
-    fread(&pixelArray[i], 1, 1, stream);
-    numElementsInsertedOnRow++;
-    if (numElementsInsertedOnRow == charsAllowedPerRow) {
-      // We are done for the row. Insert your padding pixels
-      for (int j = 0; j < paddingPixels; j++) {
-        i++;
-        pixelArray[i] = 0;
-      }
-      numElementsInsertedOnRow = 0;
-    }
-  }
-
-
-  // Right now I'm type casting the pixels to see if i can get their decimal values from their char representations
-  // printf("%s %02x", "Here is the first pixel in pixelArray as a hex", pixelArray[0]);
-  // printf("\n");
-  // printf("%s %d", "Here is the first pixel in pixelArray as a decimal", pixelArray[0]);
-  // printf("\n");
-} 
-
-int calculatePaddingPixels(int imageWidthInBytes) {
-  int paddingPixelsNeeded = 0;
-  int remainder = imageWidthInBytes / 3; // 3 Beacause a pixel is 3 bytes
-  paddingPixelsNeeded = remainder % 4;
-  return paddingPixelsNeeded;
-}
-
-void copyPixelArray(unsigned char* pixelArray, unsigned char* pixelArrayCopy, int numElements) {
-  for (int i = 0; i < (numElements + 1); i++) {
-    pixelArrayCopy[i] = pixelArray[i];
-=======
 int calculatePaddingPixels(int bytesFromGivenPixels) {
   int paddingPixelsNeeded = 0;
   if((bytesFromGivenPixels % 4) != 0)  {
@@ -243,7 +123,6 @@ void applyFilterToPixelArray(unsigned char* pixelArray, int width, int height, i
 
   for(int i = 0; i < height; i++) {
     applyFilterToRow((pixelArray + (bytesInRow * i)), width, isGrayscale);
->>>>>>> postTalk
   }
 }
 
@@ -294,45 +173,10 @@ void parseHeaderAndApplyFilter(unsigned char* bmpFileAsBytes, int isGrayscale, F
   fread(&numImportantColors, 4, 1, stream);
 
 
-<<<<<<< HEAD
-
-  // Post-headers pixel array
-  int imageWidthInBytes = width * 3;
-  unsigned int numElements = imageWidthInBytes * height;
-  unsigned char pixelArray[numElements + 1];
-
-
-  // Calculate pixel padding
-  unsigned int paddingPixels = calculatePaddingPixels(imageWidthInBytes);
-  
-  
-  printf("%s %i", "Padding pixels: ", paddingPixels);
-  printf("\n");
-  printf("%s %i", "Image width in pixels: ", width);
-  printf("\n");
-  printf("%s %i", "Image height in pixels: ", height);
-  printf("\n");
-  // printf("%s %u", "Here is the pixelOfset: ", offsetFirstBytePixelArray);
-  // printf("\n");
-  // printf("%s %u", "Here is the width: ", width);
-  // printf("\n");
-  // printf("%s %u", "Here is the height: ", height);
-  // printf("\n");
-  // printf("%s %lu", "Here is the size of the pixelArray: ", sizeof(pixelArray)/sizeof(pixelArray[0]));
-  // printf("\n");
-
-
-
-  setPixelArray(pixelArray, stream, offsetFirstBytePixelArray, numElements, paddingPixels, imageWidthInBytes);
-  for(int i = 0; i < 60; i++) {
-    printf("Index %d: %d%s", i, pixelArray[i], "\n");
-  }
-=======
   offsetFirstBytePixelArray = *(int*)(bmpFileAsBytes + 10);
   width = *(int*)(bmpFileAsBytes + 18);
   height = *(int*)(bmpFileAsBytes + 22);
   pixelArray = bmpFileAsBytes + offsetFirstBytePixelArray;
->>>>>>> postTalk
 
 #ifdef DEBUG
   printf("offsetFirstBytePixelArray = %u\n", offsetFirstBytePixelArray);

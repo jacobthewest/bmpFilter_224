@@ -79,7 +79,7 @@ void applyThresholdToPixel(unsigned char* pixel) {
   unsigned char blue = *pixel;
   unsigned char green = *(pixel + 1);
   unsigned char red = *(pixel + 2);
-  char averageIntensity = getAverageIntensity(blue, green, red);
+  unsigned char averageIntensity = getAverageIntensity(blue, green, red);
   
   if(averageIntensity < 128) { 
     // All black
